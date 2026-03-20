@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - FocusFlow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    :root {
+      --bg: #050505;
+      --card: rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.07);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.68);
+      --blue: #1e90ff;
+      --blue-dark: #005eff;
+      --green: #38ef7d;
+      --red: #ff6b6b;
+      --orange: #ffb347;
+      --shadow: 0 18px 40px rgba(0,0,0,0.25);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 22px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: -140px;
+      left: -140px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(30,144,255,0.12), transparent 70%);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -180px;
+      right: -180px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,94,255,0.08), transparent 70%);
+      z-index: -2;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    /* =========================
+       TOPBAR
+    ========================= */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 24px;
+      padding: 16px 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      user-select: none;
+    }
+
+    .brand span {
+      color: var(--blue);
+      text-shadow: 0 0 12px rgba(30,144,255,0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: 0.25s ease;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background: rgba(30,144,255,0.14);
+      border-color: rgba(30,144,255,0.25);
+      box-shadow: 0 0 18px rgba(30,144,255,0.12);
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      padding: 24px;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.98rem;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.88);
+      font-weight: 600;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .mini-tip {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.6;
+    }
+
+    /* FLASH */
+    .flash-wrap {
+      margin-bottom: 18px;
+    }
+
+    .flash {
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .flash.error {
+      background: rgba(255, 80, 80, 0.08);
+      border: 1px solid rgba(255, 80, 80, 0.14);
+      color: #ffd0d0;
+    }
+
+    .flash.success {
+      background: rgba(80, 255, 140, 0.08);
+      border: 1px solid rgba(80, 255, 140, 0.14);
+      color: #cfffde;
+    }
+
+    /* =========================
+       REMINDER POPUP
+    ========================= */
+    .reminder-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      z-index: 9995;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .reminder-overlay.show {
+      display: flex;
+    }
+
+    .reminder-popup {
+      width: 100%;
+      max-width: 520px;
+      border-radius: 28px;
+      background: rgba(10,10,10,0.95);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+      animation: popupIn 0.35s ease;
+    }
+
+    .reminder-popup::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: 28px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(30,144,255,0.25), rgba(56,239,125,0.12), rgba(255,179,71,0.15));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    @keyframes popupIn {
+      from { transform: translateY(20px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .popup-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .popup-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .popup-box {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 14px;
+    }
+
+    .popup-label {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.58);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .popup-value {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .popup-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .popup-form {
+      margin: 0;
+    }
+
+    .popup-btn {
+      border: none;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s ease;
+      font-size: 0.9rem;
+    }
+
+    .popup-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .popup-btn.done {
+      background: linear-gradient(135deg, #38ef7d, #11998e);
+      color: white;
+    }
+
+    .popup-btn.snooze {
+      background: linear-gradient(135deg, #ffb347, #ff8c42);
+      color: white;
+    }
+
+    .popup-btn.close {
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* =========================
+       TIMER SECTION
+    ========================= */
+    .timer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .focus-subject-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: white;
+      outline: none;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .focus-subject-input:focus {
+      border-color: rgba(30,144,255,0.3);
+      box-shadow: 0 0 0 4px rgba(30,144,255,0.08);
+    }
+
+    .timer-box {
+      text-align: center;
+      padding: 24px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timer-box::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 24px;
+      padding: 2px;
+      background: linear-gradient(135deg, rgba(30,144,255,0.3), rgba(56,239,125,0.15), rgba(30,144,255,0.25));
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .timer-label {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .timer-display {
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-shadow:
+        0 0 8px rgba(255,255,255,0.08),
+        0 0 18px rgba(30,144,255,0.14);
+      margin-bottom: 8px;
+    }
+
+    .timer-sub {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.88rem;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .timer-btn {
+      border: none;
+      outline: none;
+      padding: 14px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s ease;
+      font-size: 0.95rem;
+      min-width: 110px;
+    }
+
+    .start-btn {
+      background: linear-gradient(135deg, #1e90ff, #005eff);
+      color: white;
+      box-shadow: 0 0 20px rgba(30,144,255,0.18);
+    }
+
+    .pause-btn {
+      background: linear-gradient(135deg, #ffb347, #ff8c42);
+      color: white;
+      box-shadow: 0 0 20px rgba(255,179,71,0.18);
+    }
+
+    .reset-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ff3b3b);
+      color: white;
+      box-shadow: 0 0 20px rgba(255,107,107,0.18);
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, #38ef7d, #11998e);
+      color: white;
+      box-shadow: 0 0 20px rgba(56,239,125,0.18);
+    }
+
+    .timer-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .timer-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .timer-mini-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .timer-mini-title {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.58);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .timer-mini-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .hidden-save-form {
+      display: none;
+    }
+
+    /* =========================
+       STATS
+    ========================= */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 20px;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .stat-sub {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* =========================
+       MAIN GRID
+    ========================= */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-group.full {
+      grid-column: span 2;
+    }
+
+    .input-group label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.86);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: white;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(30,144,255,0.3);
+      box-shadow: 0 0 0 4px rgba(30,144,255,0.08);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .triple-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s ease;
+      font-size: 0.94rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: white;
+      box-shadow: 0 0 20px rgba(30,144,255,0.18);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 26px rgba(30,144,255,0.26);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.09);
+    }
+
+    .btn-reminder {
+      background: linear-gradient(135deg, #7b61ff, #4f46e5);
+      color: white;
+      box-shadow: 0 0 20px rgba(123,97,255,0.2);
+    }
+
+    .btn-reminder:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 26px rgba(123,97,255,0.28);
+    }
+
+    /* GOAL */
+    .goal-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .goal-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 14px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1e90ff, #38ef7d);
+      box-shadow: 0 0 18px rgba(30,144,255,0.22);
+    }
+
+    /* SUBJECT ANALYTICS */
+    .subject-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .subject-item {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .subject-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .subject-name {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .subject-time {
+      font-size: 0.9rem;
+      color: #bfe1ff;
+      font-weight: 700;
+    }
+
+    .subject-meta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.62);
+      margin-bottom: 10px;
+    }
+
+    .bar-track {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1e90ff, #00d2ff);
+      box-shadow: 0 0 14px rgba(30,144,255,0.2);
+    }
+
+    .empty-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.62);
+      line-height: 1.7;
+    }
+
+    /* STREAK */
+    .streak-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .streak-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .streak-card .title {
+      font-size: 0.84rem;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .streak-card .value {
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .days-chart {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      align-items: end;
+      margin-top: 16px;
+    }
+
+    .day-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .day-bar-wrap {
+      width: 100%;
+      max-width: 38px;
+      height: 140px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .day-bar {
+      width: 100%;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #38ef7d, #1e90ff);
+      box-shadow: 0 0 14px rgba(30,144,255,0.18);
+      min-height: 6px;
+    }
+
+    .day-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .day-time {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    /* REMINDER LIST */
+    .reminder-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .reminder-item {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .reminder-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .reminder-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .reminder-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(123,97,255,0.14);
+      border: 1px solid rgba(123,97,255,0.2);
+      color: #ddd6ff;
+      text-transform: uppercase;
+    }
+
+    .reminder-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 10px;
+    }
+
+    .reminder-msg {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.88);
+      margin-bottom: 12px;
+    }
+
+    .reminder-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .mini-form {
+      margin: 0;
+    }
+
+    .mini-btn {
+      border: none;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .mini-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .mini-btn.done {
+      background: rgba(56,239,125,0.14);
+      border: 1px solid rgba(56,239,125,0.2);
+      color: #cfffde;
+    }
+
+    .mini-btn.snooze {
+      background: rgba(255,179,71,0.14);
+      border: 1px solid rgba(255,179,71,0.2);
+      color: #ffe1b5;
+    }
+
+    .mini-btn.delete {
+      background: rgba(255,107,107,0.14);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: #ffd0d0;
+    }
+
+    .mini-btn.pending {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: white;
+    }
+
+    .done-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(56,239,125,0.12);
+      border: 1px solid rgba(56,239,125,0.18);
+      color: #cfffde;
+    }
+
+    /* SESSIONS */
+    .session-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .session-item {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr 0.7fr;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .session-block .label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .session-block .value {
+      font-size: 0.92rem;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .session-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .delete-form {
+      margin: 0;
+    }
+
+    .delete-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 80, 80, 0.12);
+      border: 1px solid rgba(255, 80, 80, 0.18);
+      color: #ffd0d0;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .delete-btn:hover {
+      background: rgba(255, 80, 80, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* FLOWBOT */
+    .flowbot-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      z-index: 9999;
+      background: radial-gradient(circle at 30% 30%, #7bd7ff, #1e90ff 40%, #005eff 75%);
+      box-shadow:
+        0 0 0 6px rgba(30,144,255,0.08),
+        0 12px 30px rgba(0,94,255,0.35),
+        0 0 26px rgba(30,144,255,0.35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.25s ease;
+      animation: botFloat 2.6s ease-in-out infinite;
+    }
+
+    .flowbot-toggle:hover {
+      transform: translateY(-4px) scale(1.03);
+    }
+
+    @keyframes botFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .bot-face {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.14);
+      border: 2px solid rgba(255,255,255,0.3);
+      position: relative;
+      backdrop-filter: blur(6px);
+    }
+
+    .bot-eye {
+      position: absolute;
+      top: 15px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 10px rgba(255,255,255,0.9);
+    }
+
+    .bot-eye.left { left: 11px; }
+    .bot-eye.right { right: 11px; }
+
+    .bot-mouth {
+      position: absolute;
+      bottom: 11px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 8px;
+      border-bottom: 3px solid rgba(255,255,255,0.95);
+      border-radius: 0 0 20px 20px;
+    }
+
+    .flowbot-panel {
+      position: fixed;
+      bottom: 112px;
+      right: 24px;
+      width: 390px;
+      max-width: calc(100vw - 24px);
+      height: 570px;
+      max-height: calc(100vh - 150px);
+      border-radius: 26px;
+      background: rgba(10,10,10,0.94);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45);
+      z-index: 9998;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .flowbot-panel.show {
+      display: flex;
+    }
+
+    .bot-header {
+      padding: 16px 16px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .bot-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bot-mini {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #7bd7ff, #1e90ff 40%, #005eff 75%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 16px rgba(30,144,255,0.25);
+    }
+
+    .bot-mini-face {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.28);
+      position: relative;
+    }
+
+    .bot-mini-face::before,
+    .bot-mini-face::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .bot-mini-face::before { left: 5px; }
+    .bot-mini-face::after { right: 5px; }
+
+    .bot-mini-mouth {
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 4px;
+      border-bottom: 2px solid white;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .bot-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .bot-sub {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.58);
+      margin-top: 2px;
+    }
+
+    .bot-close {
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .bot-quick {
+      padding: 12px 14px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .quick-btn {
+      flex: 0 0 auto;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .quick-btn:hover {
+      background: rgba(30,144,255,0.12);
+      border-color: rgba(30,144,255,0.22);
+    }
+
+    .bot-messages {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(30,144,255,0.04), transparent 30%),
+        radial-gradient(circle at 90% 90%, rgba(0,94,255,0.04), transparent 30%);
+    }
+
+    .msg {
+      max-width: 88%;
+      padding: 12px 14px;
+      border-radius: 18px;
+      line-height: 1.6;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(30,144,255,0.18), rgba(0,94,255,0.18));
+      border: 1px solid rgba(30,144,255,0.18);
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.92);
+    }
+
+    .bot-input-wrap {
+      padding: 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .bot-input-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .bot-textarea {
+      flex: 1;
+      min-height: 52px;
+      max-height: 120px;
+      resize: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      outline: none;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .bot-send {
+      border: none;
+      min-width: 56px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1e90ff, #005eff);
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(30,144,255,0.18);
+    }
+
+    .bot-note {
+      margin-top: 8px;
+      font-size: 0.74rem;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.5;
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.8);
+      animation: bounce 1s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.15s; }
+    .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .timer-grid,
+      .main-grid,
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .streak-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .session-item {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .session-actions {
+        justify-content: flex-start;
+      }
+
+      .timer-display {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .input-group.full {
+        grid-column: span 1;
+      }
+
+      .triple-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timer-meta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .days-chart {
+        gap: 8px;
+      }
+
+      .day-bar-wrap {
+        height: 110px;
+      }
+
+      .flowbot-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 96px;
+        height: 72vh;
+        max-height: 72vh;
+      }
+
+      .flowbot-toggle {
+        right: 16px;
+        bottom: 16px;
+        width: 66px;
+        height: 66px;
+      }
+
+      .timer-display {
+        font-size: 2.35rem;
+      }
+
+      .popup-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- SMART REMINDER POPUP -->
+    {% if due_reminders and due_reminders|length > 0 %}
+      {% set due = due_reminders[0] %}
+      <div class="reminder-overlay show" id="reminderOverlay">
+        <div class="reminder-popup">
+          <div class="popup-title">⏰ Smart Reminder Alert</div>
+          <div class="popup-sub">
+            This reminder is due right now. Handle it properly — don't just ignore and pretend you're disciplined.
+          </div>
+
+          <div class="popup-box">
+            <div class="popup-label">Title</div>
+            <div class="popup-value">{{ due.title }}</div>
+          </div>
+
+          {% if due.subject %}
+          <div class="popup-box">
+            <div class="popup-label">Subject</div>
+            <div class="popup-value">{{ due.subject }}</div>
+          </div>
+          {% endif %}
+
+          <div class="popup-box">
+            <div class="popup-label">Message</div>
+            <div class="popup-value">{{ due.message }}</div>
+          </div>
+
+          <div class="popup-box">
+            <div class="popup-label">Repeat Type</div>
+            <div class="popup-value">{{ due.repeat_type|upper }}</div>
+          </div>
+
+          <div class="popup-actions">
+            <form method="POST" action="{{ url_for('complete_reminder', reminder_id=due.id) }}" class="popup-form">
+              <button type="submit" class="popup-btn done">Mark as Done</button>
+            </form>
+
+            <form method="POST" action="{{ url_for('snooze_reminder_route', reminder_id=due.id) }}" class="popup-form">
+              <button type="submit" class="popup-btn snooze">Snooze 10 Min</button>
+            </form>
+
+            <button class="popup-btn close" id="closeReminderPopup">Close</button>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="brand">FOCUS<span>FLOW</span></div>
+
+      <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="card">
+        <h1>Welcome back, {{ user_name }} 👋</h1>
+        <p>
+          This is your real FocusFlow dashboard — with a live study timer, manual backup entry,
+          subject analytics, streak tracking, smart reminders, and FLOWBOT AI support.
+        </p>
+
+        <div class="hero-badges">
+          <div class="badge">🔥 Current Streak: {{ current_streak }} days</div>
+          <div class="badge">🎯 Goal Progress: {{ goal_progress }}%</div>
+          <div class="badge">📚 Top Subject: {{ top_subject.subject if top_subject else 'None Yet' }}</div>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <div class="card mini-tip">
+          💡 <strong>Rule:</strong> Live timer is your main system. Manual entry is backup. Reminder is your discipline alarm.
+        </div>
+
+        <div class="card mini-tip">
+          🤖 <strong>FLOWBOT:</strong> Ask it to explain tough paragraphs, solve coding errors, or tell you what subject needs more focus.
+        </div>
+      </div>
+    </div>
+
+    <!-- FLASH -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- LIVE TIMER -->
+    <div class="timer-grid">
+      <div class="card">
+        <div class="section-title">Live Focus Timer</div>
+        <div class="section-sub">
+          This is the main feature. Start your real session, track exact time, and save it directly.
+          No fake rounding. 1:20 means exactly 1 minute 20 seconds.
+        </div>
+
+        <input
+          type="text"
+          id="liveSubject"
+          class="focus-subject-input"
+          placeholder="Enter subject name (e.g. Python, DBMS, Maths)"
+        />
+
+        <div class="timer-box">
+          <div class="timer-label">Current Focus Session</div>
+          <div class="timer-display" id="timerDisplay">00:00:00</div>
+          <div class="timer-sub" id="timerStatus">Ready to start your session</div>
+        </div>
+
+        <div class="timer-controls">
+          <button class="timer-btn start-btn" id="startBtn">Start</button>
+          <button class="timer-btn pause-btn" id="pauseBtn">Pause</button>
+          <button class="timer-btn reset-btn" id="resetBtn">Reset</button>
+          <button class="timer-btn save-btn" id="saveBtn">Save Session</button>
+        </div>
+
+        <div class="timer-meta-grid">
+          <div class="timer-mini-card">
+            <div class="timer-mini-title">Distractions During Session</div>
+            <input type="number" id="liveDistractions" min="0" placeholder="Enter distractions count">
+          </div>
+
+          <div class="timer-mini-card">
+            <div class="timer-mini-title">Session Summary</div>
+            <div class="timer-mini-value" id="sessionSummary">0s tracked</div>
+          </div>
+        </div>
+
+        <!-- Hidden form for backend save -->
+        <form method="POST" action="{{ url_for('add_session') }}" id="hiddenSaveForm" class="hidden-save-form">
+          <input type="hidden" name="subject" id="hiddenSubject">
+          <input type="hidden" name="duration" id="hiddenDuration">
+          <input type="hidden" name="distractions" id="hiddenDistractions">
+        </form>
+      </div>
+
+      <div style="display:grid; gap:20px;">
+        <!-- QUICK STATS -->
+        <div class="card">
+          <div class="section-title">Quick Stats</div>
+          <div class="section-sub">Your current numbers at a glance.</div>
+
+          <div class="timer-meta-grid">
+            <div class="timer-mini-card">
+              <div class="timer-mini-title">Today's Study</div>
+              <div class="timer-mini-value">{{ today_seconds_formatted }}</div>
+            </div>
+
+            <div class="timer-mini-card">
+              <div class="timer-mini-title">Total Sessions</div>
+              <div class="timer-mini-value">{{ total_sessions }}</div>
+            </div>
+
+            <div class="timer-mini-card">
+              <div class="timer-mini-title">Current Streak</div>
+              <div class="timer-mini-value">{{ current_streak }} days</div>
+            </div>
+
+            <div class="timer-mini-card">
+              <div class="timer-mini-title">Top Subject</div>
+              <div class="timer-mini-value">{{ top_subject.subject if top_subject else 'None' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DAILY GOAL -->
+        <div class="card">
+          <div class="section-title">Daily Goal</div>
+          <div class="section-sub">
+            Set your exact daily target. This controls your progress bar.
+          </div>
+
+          <form method="POST" action="{{ url_for('set_goal') }}">
+            <div class="form-grid">
+              <div class="input-group full">
+                <label>Goal (Hours / Minutes / Seconds)</label>
+                <div class="triple-grid">
+                  <input type="number" name="goal_hours" min="0" placeholder="Hours">
+                  <input type="number" name="goal_minutes" min="0" max="59" placeholder="Minutes">
+                  <input type="number" name="goal_seconds" min="0" max="59" placeholder="Seconds">
+                </div>
+              </div>
+
+              <div class="input-group full">
+                <button type="submit" class="btn btn-primary">Update Daily Goal</button>
+              </div>
+            </div>
+          </form>
+
+          <div class="goal-box">
+            <div class="goal-meta">
+              <div><strong>Goal:</strong> {{ daily_goal_formatted }}</div>
+              <div><strong>Today:</strong> {{ today_seconds_formatted }}</div>
+              <div><strong>Progress:</strong> {{ goal_progress }}%</div>
+            </div>
+
+            <div class="progress-track">
+              <div class="progress-fill" style="width: {{ goal_progress }}%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Study Time</div>
+        <div class="stat-value">{{ total_seconds_formatted }}</div>
+        <div class="stat-sub">All recorded focus time</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Today's Study Time</div>
+        <div class="stat-value">{{ today_seconds_formatted }}</div>
+        <div class="stat-sub">Tracked today only</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Total Sessions</div>
+        <div class="stat-value">{{ total_sessions }}</div>
+        <div class="stat-sub">Live + manual entries</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Total Distractions</div>
+        <div class="stat-value">{{ total_distractions }}</div>
+        <div class="stat-sub">Across all sessions</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+      <!-- LEFT -->
+      <div style="display:grid; gap:20px;">
+        <!-- MANUAL SESSION -->
+        <div class="card">
+          <div class="section-title">Manual Session Entry (Backup Only)</div>
+          <div class="section-sub">
+            Use this only when you forgot to run the live timer. This is secondary, not the main workflow.
+          </div>
+
+          <form method="POST" action="{{ url_for('add_manual_session') }}">
+            <div class="form-grid">
+              <div class="input-group full">
+                <label for="manual_subject">Subject Name</label>
+                <input type="text" id="manual_subject" name="manual_subject" placeholder="Example: Operating System" required>
+              </div>
+
+              <div class="input-group full">
+                <label>Duration (Hours / Minutes / Seconds)</label>
+                <div class="triple-grid">
+                  <input type="number" name="manual_hours" min="0" placeholder="Hours">
+                  <input type="number" name="manual_minutes" min="0" max="59" placeholder="Minutes">
+                  <input type="number" name="manual_seconds" min="0" max="59" placeholder="Seconds">
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label for="manual_distractions">Distractions Count</label>
+                <input type="number" id="manual_distractions" name="manual_distractions" min="0" placeholder="Example: 1">
+              </div>
+
+              <div class="input-group">
+                <label for="manual_date">Study Date</label>
+                <input type="date" id="manual_date" name="manual_date" required>
+              </div>
+
+              <div class="input-group">
+                <label for="manual_time">Study Time</label>
+                <input type="time" id="manual_time" name="manual_time" required>
+              </div>
+
+              <div class="input-group full">
+                <button type="submit" class="btn btn-secondary">Save Manual Session</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- SMART REMINDER FORM -->
+        <div class="card">
+          <div class="section-title">Smart Reminder</div>
+          <div class="section-sub">
+            Build discipline into the system. These reminders appear as premium popup alerts when due.
+          </div>
+
+          <form method="POST" action="{{ url_for('add_reminder_route') }}">
+            <div class="form-grid">
+              <div class="input-group full">
+                <label for="reminder_title">Reminder Title</label>
+                <input type="text" id="reminder_title" name="reminder_title" placeholder="Example: Revise DBMS ER Model" required>
+              </div>
+
+              <div class="input-group full">
+                <label for="reminder_message">Reminder Message</label>
+                <textarea id="reminder_message" name="reminder_message" placeholder="What exactly should you do?" required></textarea>
+              </div>
+
+              <div class="input-group">
+                <label for="reminder_subject">Subject (Optional)</label>
+                <input type="text" id="reminder_subject" name="reminder_subject" placeholder="Python / DBMS / Maths">
+              </div>
+
+              <div class="input-group">
+                <label for="repeat_type">Repeat Type</label>
+                <select id="repeat_type" name="repeat_type">
+                  <option value="once">Once</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="reminder_date">Date</label>
+                <input type="date" id="reminder_date" name="reminder_date" required>
+              </div>
+
+              <div class="input-group">
+                <label for="reminder_time">Time</label>
+                <input type="time" id="reminder_time" name="reminder_time" required>
+              </div>
+
+              <div class="input-group full">
+                <button type="submit" class="btn btn-reminder">Create Smart Reminder</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- SUBJECT ANALYTICS -->
+        <div class="card">
+          <div class="section-title">Subject-wise Analytics</div>
+          <div class="section-sub">
+            This is what makes the tracker smart, not just a timer.
+          </div>
+
+          {% if top_subject %}
+            <div class="mini-tip" style="margin-bottom:14px;">
+              🏆 <strong>Top Studied Subject:</strong> {{ top_subject.subject }} ({{ top_subject.total_duration_formatted }})
+            </div>
+          {% endif %}
+
+          {% if subject_stats %}
+            <div class="subject-list">
+              {% for s in subject_stats %}
+                <div class="subject-item">
+                  <div class="subject-top">
+                    <div class="subject-name">{{ s.subject }}</div>
+                    <div class="subject-time">{{ s.total_duration_formatted }}</div>
+                  </div>
+
+                  <div class="subject-meta">
+                    <span>Sessions: {{ s.session_count }}</span>
+                    <span>Distractions: {{ s.total_distractions }}</span>
+                  </div>
+
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ s.bar_percent }}%;"></div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-box">
+              No subject analytics yet. Start using the live timer and save real sessions.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div style="display:grid; gap:20px;">
+        <!-- STREAK + LAST 7 DAYS -->
+        <div class="card">
+          <div class="section-title">Weekly Streak + Last 7 Days</div>
+          <div class="section-sub">
+            Consistency matters more than random long bursts.
+          </div>
+
+          <div class="streak-grid">
+            <div class="streak-card">
+              <div class="title">Current Streak</div>
+              <div class="value">🔥 {{ current_streak }} days</div>
+            </div>
+
+            <div class="streak-card">
+              <div class="title">Longest Streak</div>
+              <div class="value">🏆 {{ longest_streak }} days</div>
+            </div>
+
+            <div class="streak-card">
+              <div class="title">Last 7 Days Total</div>
+              <div class="value">⏱️ {{ weekly_total_formatted }}</div>
+            </div>
+          </div>
+
+          {% if best_day %}
+            <div class="mini-tip" style="margin-bottom:14px;">
+              📈 <strong>Best Day:</strong> {{ best_day.label }} — {{ best_day.formatted }}
+            </div>
+          {% endif %}
+
+          <div class="days-chart">
+            {% for day in last_7_days %}
+              <div class="day-col">
+                <div class="day-bar-wrap">
+                  <div class="day-bar" style="height: {{ day.bar_percent if day.bar_percent > 0 else 4 }}%;"></div>
+                </div>
+                <div class="day-label">{{ day.label }}</div>
+                <div class="day-time">{{ day.formatted }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- ALL REMINDERS LIST -->
+        <div class="card">
+          <div class="section-title">Your Smart Reminders</div>
+          <div class="section-sub">
+            Keep them clean. If you set 20 reminders and ignore all of them, that's not productivity — that's decoration.
+          </div>
+
+          {% if all_reminders %}
+            <div class="reminder-list">
+              {% for r in all_reminders %}
+                <div class="reminder-item">
+                  <div class="reminder-top">
+                    <div class="reminder-title">{{ r.title }}</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                      <div class="reminder-chip">{{ r.repeat_type }}</div>
+                      {% if r.is_done == 1 %}
+                        <div class="done-tag">DONE</div>
+                      {% else %}
+                        <div class="done-tag" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); color: white;">ACTIVE</div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <div class="reminder-meta">
+                    {% if r.subject %}
+                      <span>📚 {{ r.subject }}</span>
+                    {% endif %}
+                    <span>🕒 {{ r.remind_at }}</span>
+                  </div>
+
+                  <div class="reminder-msg">{{ r.message }}</div>
+
+                  <div class="reminder-actions">
+                    {% if r.is_done == 0 %}
+                      <form method="POST" action="{{ url_for('complete_reminder', reminder_id=r.id) }}" class="mini-form">
+                        <button type="submit" class="mini-btn done">Mark Done</button>
+                      </form>
+
+                      <form method="POST" action="{{ url_for('snooze_reminder_route', reminder_id=r.id) }}" class="mini-form">
+                        <button type="submit" class="mini-btn snooze">Snooze 10m</button>
+                      </form>
+                    {% else %}
+                      <button type="button" class="mini-btn pending">Completed</button>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('delete_reminder_route', reminder_id=r.id) }}" class="mini-form" onsubmit="return confirm('Delete this reminder?');">
+                      <button type="submit" class="mini-btn delete">Delete</button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="empty-box">
+              No reminders yet. Create one and let the system force your discipline.
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- FLOWBOT INFO -->
+        <div class="card">
+          <div class="section-title">FLOWBOT AI Assistant</div>
+          <div class="section-sub">
+            Your floating AI robot is always available at the bottom-right corner.
+          </div>
+
+          <div class="mini-tip">
+            🤖 Ask FLOWBOT:
+            <br><br>
+            • Explain this paragraph simply<br>
+            • Help solve this coding error<br>
+            • Which subject should I focus on next?<br>
+            • Analyze my tracker data and give tips
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT SESSIONS -->
+    <div class="card" style="margin-bottom: 30px;">
+      <div class="section-title">Recent Focus Sessions</div>
+      <div class="section-sub">
+        Keep your data clean. Delete bad entries if needed.
+      </div>
+
+      {% if sessions %}
+        <div class="session-list">
+          {% for s in sessions %}
+            <div class="session-item">
+              <div class="session-block">
+                <div class="label">Subject</div>
+                <div class="value">{{ s.subject }}</div>
+              </div>
+
+              <div class="session-block">
+                <div class="label">Duration</div>
+                <div class="value">{{ s.duration_formatted }}</div>
+              </div>
+
+              <div class="session-block">
+                <div class="label">Distractions</div>
+                <div class="value">{{ s.distractions }}</div>
+              </div>
+
+              <div class="session-block">
+                <div class="label">Date & Time</div>
+                <div class="value">{{ s.created_at }}</div>
+              </div>
+
+              <div class="session-actions">
+                <form
+                  method="POST"
+                  action="{{ url_for('delete_session', session_id=s.id) }}"
+                  class="delete-form"
+                  onsubmit="return confirm('Delete this session?');"
+                >
+                  <button type="submit" class="delete-btn">Delete</button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-box">
+          No sessions yet. Start a live timer session first.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- FLOWBOT TOGGLE -->
+  <button class="flowbot-toggle" id="flowbotToggle" title="Open FLOWBOT">
+    <div class="bot-face">
+      <div class="bot-eye left"></div>
+      <div class="bot-eye right"></div>
+      <div class="bot-mouth"></div>
+    </div>
+  </button>
+
+  <!-- FLOWBOT PANEL -->
+  <div class="flowbot-panel" id="flowbotPanel">
+    <div class="bot-header">
+      <div class="bot-header-left">
+        <div class="bot-mini">
+          <div class="bot-mini-face">
+            <div class="bot-mini-mouth"></div>
+          </div>
+        </div>
+        <div>
+          <div class="bot-title">FLOWBOT</div>
+          <div class="bot-sub">Your cute study + debug assistant</div>
+        </div>
+      </div>
+
+      <button class="bot-close" id="flowbotClose">✕</button>
+    </div>
+
+    <div class="bot-quick">
+      <button class="quick-btn" data-msg="Analyze my current focus tracker data and tell me what I should improve.">Analyze My Tracker</button>
+      <button class="quick-btn" data-msg="Suggest what subject I should study next based on my current FocusFlow data.">What To Study Next?</button>
+      <button class="quick-btn" data-msg="Explain this in simple words: ">Explain Paragraph</button>
+      <button class="quick-btn" data-msg="I have an error in my code. Help me debug it step by step: ">Solve Error</button>
+      <button class="quick-btn" data-msg="Give me 3 practical focus tips based on my current study pattern.">Focus Tips</button>
+    </div>
+
+    <div class="bot-messages" id="botMessages">
+      <div class="msg bot">
+        Hey {{ user_name }} 👋 I’m <strong>FLOWBOT</strong>.<br><br>
+        I can:
+        - explain tough study paragraphs simply
+        - give hints
+        - help solve coding errors
+        - analyze your FocusFlow tracker data
+        - suggest what subject to study next
+        - give focus tips based on your habits<br><br>
+        Ask me anything related to your study or project.
+      </div>
+    </div>
+
+    <div class="bot-input-wrap">
+      <div class="bot-input-row">
+        <textarea
+          id="botInput"
+          class="bot-textarea"
+          placeholder="Ask FLOWBOT something..."
+        ></textarea>
+        <button class="bot-send" id="botSend">➤</button>
+      </div>
+      <div class="bot-note">
+        FLOWBOT uses your FocusFlow data + your question. Keep it study-related for best results.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================
+       REMINDER POPUP
+    ========================= */
+    const reminderOverlay = document.getElementById("reminderOverlay");
+    const closeReminderPopup = document.getElementById("closeReminderPopup");
+
+    if (closeReminderPopup && reminderOverlay) {
+      closeReminderPopup.addEventListener("click", () => {
+        reminderOverlay.classList.remove("show");
+      });
+
+      reminderOverlay.addEventListener("click", (e) => {
+        if (e.target === reminderOverlay) {
+          reminderOverlay.classList.remove("show");
+        }
+      });
+    }
+
+    /* =========================
+       LIVE TIMER LOGIC
+    ========================= */
+    const liveSubject = document.getElementById("liveSubject");
+    const liveDistractions = document.getElementById("liveDistractions");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStatus = document.getElementById("timerStatus");
+    const sessionSummary = document.getElementById("sessionSummary");
+
+    const startBtn = document.getElementById("startBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    const hiddenSaveForm = document.getElementById("hiddenSaveForm");
+    const hiddenSubject = document.getElementById("hiddenSubject");
+    const hiddenDuration = document.getElementById("hiddenDuration");
+    const hiddenDistractions = document.getElementById("hiddenDistractions");
+
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let isRunning = false;
+
+    function formatTime(totalSeconds) {
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+
+      return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+
+    function formatPretty(totalSeconds) {
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+
+      if (hrs > 0) {
+        return `${hrs}h ${mins}m ${secs}s tracked`;
+      } else if (mins > 0) {
+        return `${mins}m ${secs}s tracked`;
+      } else {
+        return `${secs}s tracked`;
+      }
+    }
+
+    function updateTimerUI() {
+      timerDisplay.textContent = formatTime(timerSeconds);
+      sessionSummary.textContent = formatPretty(timerSeconds);
+    }
+
+    startBtn.addEventListener("click", () => {
+      const subject = liveSubject.value.trim();
+
+      if (!subject) {
+        alert("Please enter a subject before starting the timer.");
+        liveSubject.focus();
+        return;
+      }
+
+      if (isRunning) return;
+
+      isRunning = true;
+      timerStatus.textContent = "Focus session is running...";
+      timerInterval = setInterval(() => {
+        timerSeconds++;
+        updateTimerUI();
+      }, 1000);
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      if (!isRunning) return;
+
+      clearInterval(timerInterval);
+      isRunning = false;
+      timerStatus.textContent = "Timer paused. Resume or save the session.";
+    });
+
+    resetBtn.addEventListener("click", () => {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timerSeconds = 0;
+      updateTimerUI();
+      timerStatus.textContent = "Timer reset. Ready to start your session.";
+      liveDistractions.value = "";
+    });
+
+    saveBtn.addEventListener("click", () => {
+      const subject = liveSubject.value.trim();
+      const distractions = liveDistractions.value.trim();
+
+      if (!subject) {
+        alert("Please enter a subject.");
+        liveSubject.focus();
+        return;
+      }
+
+      if (timerSeconds <= 0) {
+        alert("You can't save a 0 second session.");
+        return;
+      }
+
+      clearInterval(timerInterval);
+      isRunning = false;
+      timerStatus.textContent = "Saving session...";
+
+      hiddenSubject.value = subject;
+      hiddenDuration.value = timerSeconds;
+      hiddenDistractions.value = distractions || 0;
+
+      hiddenSaveForm.submit();
+    });
+
+    updateTimerUI();
+
+    /* =========================
+       FLOWBOT LOGIC
+    ========================= */
+    const flowbotToggle = document.getElementById("flowbotToggle");
+    const flowbotPanel = document.getElementById("flowbotPanel");
+    const flowbotClose = document.getElementById("flowbotClose");
+    const botMessages = document.getElementById("botMessages");
+    const botInput = document.getElementById("botInput");
+    const botSend = document.getElementById("botSend");
+    const quickBtns = document.querySelectorAll(".quick-btn");
+
+    flowbotToggle.addEventListener("click", () => {
+      flowbotPanel.classList.toggle("show");
+    });
+
+    flowbotClose.addEventListener("click", () => {
+      flowbotPanel.classList.remove("show");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (
+        flowbotPanel.classList.contains("show") &&
+        !flowbotPanel.contains(e.target) &&
+        !flowbotToggle.contains(e.target)
+      ) {
+        flowbotPanel.classList.remove("show");
+      }
+    });
+
+    quickBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        botInput.value = btn.dataset.msg;
+        botInput.focus();
+      });
+    });
+
+    function addMessage(text, type = "bot", isHtml = false) {
+      const div = document.createElement("div");
+      div.className = `msg ${type}`;
+
+      if (isHtml) {
+        div.innerHTML = text;
+      } else {
+        div.textContent = text;
+      }
+
+      botMessages.appendChild(div);
+      botMessages.scrollTop = botMessages.scrollHeight;
+      return div;
+    }
+
+    async function sendToFlowbot() {
+      const question = botInput.value.trim();
+      if (!question) return;
+
+      addMessage(question, "user");
+      botInput.value = "";
+      botInput.style.height = "52px";
+
+      const typingMsg = addMessage(
+        `<span class="typing"><span></span><span></span><span></span></span>`,
+        "bot",
+        true
+      );
+
+      try {
+        const response = await fetch("{{ url_for('ai_assistant') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ question: question })
+        });
+
+        const data = await response.json();
+
+        typingMsg.remove();
+
+        if (data.reply) {
+          addMessage(data.reply, "bot");
+        } else if (data.error) {
+          addMessage("Error: " + data.error, "bot");
+        } else {
+          addMessage("Something went wrong. No valid response received.", "bot");
+        }
+
+      } catch (error) {
+        typingMsg.remove();
+        addMessage("Request failed. Check backend route or internet/API config.", "bot");
+      }
+    }
+
+    botSend.addEventListener("click", sendToFlowbot);
+
+    botInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendToFlowbot();
+      }
+    });
+
+    botInput.addEventListener("input", () => {
+      botInput.style.height = "52px";
+      botInput.style.height = Math.min(botInput.scrollHeight, 120) + "px";
+    });
+  </script>
+</body>
+</html>

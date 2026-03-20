@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FocusFlow - Student Focus Tracker</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #000;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar {
+      max-width: 1380px;
+      margin: auto;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      gap: 20px;
+    }
+
+    /* ===== LOGO ===== */
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .logo span {
+      color: #1e90ff;
+      text-shadow: 0 0 10px rgba(30, 144, 255, 0.6);
+    }
+
+    /* ===== NAV WRAP ===== */
+    .nav-wrap {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    /* ===== NAV LINKS ===== */
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 34px;
+      align-items: center;
+      position: relative;
+      padding-bottom: 8px;
+    }
+
+    .nav-links li {
+      position: relative;
+    }
+
+    .nav-links li a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 0.98rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px 0;
+      transition: 0.25s ease;
+      position: relative;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .nav-links li a:hover {
+      text-shadow: 0 0 10px rgba(255,255,255,0.25);
+    }
+
+    /* ===== AUTH BUTTONS ===== */
+    .auth-buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-outline,
+    .btn-solid {
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 999px;
+      transition: 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .btn-outline {
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-solid {
+      color: #fff;
+      border: 1px solid rgba(30, 144, 255, 0.35);
+      background: rgba(30, 144, 255, 0.12);
+      box-shadow:
+        0 0 10px rgba(30, 144, 255, 0.12),
+        inset 0 0 8px rgba(30, 144, 255, 0.05);
+    }
+
+    .btn-solid:hover {
+      background: rgba(30, 144, 255, 0.2);
+      box-shadow:
+        0 0 12px rgba(30, 144, 255, 0.25),
+        0 0 24px rgba(30, 144, 255, 0.18);
+      transform: translateY(-1px);
+    }
+
+    /* ===== ACTIVE WHITE LINE ===== */
+    .active-line {
+      position: absolute;
+      bottom: 0;
+      height: 3px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow:
+        0 0 8px rgba(255,255,255,0.9),
+        0 0 16px rgba(255,255,255,0.35);
+      transition: all 0.35s ease;
+      z-index: 2;
+    }
+
+    /* ===== ELECTRIC RED HOVER LINE ===== */
+    .hover-line {
+      position: absolute;
+      bottom: -1px;
+      height: 6px;
+      border-radius: 999px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 3;
+      transition:
+        left 0.22s ease,
+        width 0.22s ease,
+        opacity 0.18s ease;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 0, 60, 0.2),
+        rgba(255, 0, 60, 0.95),
+        rgba(255, 90, 120, 1),
+        rgba(255, 0, 60, 0.95),
+        rgba(255, 0, 60, 0.2)
+      );
+      box-shadow:
+        0 0 6px rgba(255, 0, 60, 0.9),
+        0 0 14px rgba(255, 0, 60, 0.7),
+        0 0 28px rgba(255, 0, 60, 0.45);
+      filter: blur(0.2px);
+      overflow: hidden;
+    }
+
+    .hover-line::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          115deg,
+          transparent 0%,
+          transparent 35%,
+          rgba(255,255,255,0.95) 48%,
+          rgba(255,180,200,0.9) 52%,
+          transparent 65%,
+          transparent 100%
+        );
+      animation: electricSweep 0.38s linear infinite;
+      mix-blend-mode: screen;
+    }
+
+    .hover-line::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        radial-gradient(circle at 12% 50%, rgba(255,255,255,0.95) 0 2px, transparent 3px),
+        radial-gradient(circle at 28% 30%, rgba(255,120,150,0.9) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 50% 65%, rgba(255,255,255,0.9) 0 1.5px, transparent 3px),
+        radial-gradient(circle at 72% 40%, rgba(255,80,120,0.95) 0 2px, transparent 3px),
+        radial-gradient(circle at 90% 55%, rgba(255,255,255,0.9) 0 1.5px, transparent 3px);
+      animation: sparkFlicker 0.22s linear infinite alternate;
+      opacity: 0.9;
+    }
+
+    @keyframes electricSweep {
+      0%   { transform: translateX(-120%); }
+      100% { transform: translateX(120%); }
+    }
+
+    @keyframes sparkFlicker {
+      0%   { opacity: 0.35; transform: translateY(0); }
+      100% { opacity: 1; transform: translateY(-1px); }
+    }
+
+    /* ===== MOBILE TOGGLE ===== */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .menu-toggle span {
+      width: 28px;
+      height: 3px;
+      border-radius: 10px;
+      background: #fff;
+      transition: 0.3s ease;
+    }
+
+    /* ===== GENERAL SECTION ===== */
+    section {
+      max-width: 1380px;
+      margin: auto;
+      padding: 100px 24px;
+    }
+
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .section-title span {
+      color: #1e90ff;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: rgba(255,255,255,0.72);
+      max-width: 750px;
+      margin: 0 auto 50px;
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 50px;
+      padding-top: 130px;
+    }
+
+    .hero-text .tag {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #9fd0ff;
+      background: rgba(30, 144, 255, 0.08);
+      border: 1px solid rgba(30, 144, 255, 0.18);
+      margin-bottom: 22px;
+    }
+
+    .hero-text h1 {
+      font-size: 4rem;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .hero-text h1 span {
+      color: #1e90ff;
+      text-shadow: 0 0 18px rgba(30, 144, 255, 0.35);
+    }
+
+    .hero-text p {
+      color: rgba(255,255,255,0.78);
+      font-size: 1.08rem;
+      line-height: 1.9;
+      max-width: 650px;
+      margin-bottom: 32px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons a {
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: 0.3s ease;
+    }
+
+    .hero-primary {
+      color: white;
+      background: linear-gradient(135deg, #1e90ff, #005eff);
+      box-shadow: 0 0 20px rgba(30, 144, 255, 0.28);
+    }
+
+    .hero-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 28px rgba(30, 144, 255, 0.38);
+    }
+
+    .hero-secondary {
+      color: white;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .hero-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      transform: translateY(-2px);
+    }
+
+    .hero-mini-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .mini-stat {
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      min-width: 160px;
+      backdrop-filter: blur(8px);
+    }
+
+    .mini-stat h3 {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    .mini-stat p {
+      font-size: 0.9rem;
+      margin: 0;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ===== HERO RIGHT ===== */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .glass-panel {
+      width: 100%;
+      max-width: 470px;
+      padding: 28px;
+      border-radius: 28px;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.06),
+        rgba(255,255,255,0.03)
+      );
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 20px 50px rgba(0,0,0,0.45),
+        inset 0 1px 0 rgba(255,255,255,0.05);
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: -80px;
+      right: -60px;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(30,144,255,0.2), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .panel-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 26px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .panel-top h3 {
+      font-size: 1.2rem;
+    }
+
+    .status-badge {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #8effb4;
+      background: rgba(0,255,100,0.08);
+      border: 1px solid rgba(0,255,100,0.12);
+    }
+
+    .timer-box {
+      text-align: center;
+      padding: 26px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .timer-label {
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .timer-value {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 0 18px rgba(255,255,255,0.08);
+    }
+
+    .subject-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .subject-card {
+      flex: 1;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .subject-card p {
+      color: rgba(255,255,255,0.62);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .subject-card h4 {
+      font-size: 1.15rem;
+    }
+
+    .progress-box {
+      position: relative;
+      z-index: 2;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 78%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #1e90ff, #00c6ff);
+      box-shadow: 0 0 18px rgba(30, 144, 255, 0.35);
+    }
+
+    /* ===== WHY SECTION ===== */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .why-card {
+      padding: 28px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: 0.3s ease;
+    }
+
+    .why-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(30, 144, 255, 0.2);
+      box-shadow: 0 18px 35px rgba(0,0,0,0.28);
+    }
+
+    .why-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+
+    .why-card p {
+      color: rgba(255,255,255,0.68);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    /* ===== FEATURES ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .feature-card {
+      padding: 28px;
+      border-radius: 24px;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.04),
+        rgba(255,255,255,0.02)
+      );
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(30, 144, 255, 0.22);
+      box-shadow: 0 18px 35px rgba(0,0,0,0.28);
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+      background: rgba(30, 144, 255, 0.08);
+      border: 1px solid rgba(30, 144, 255, 0.14);
+    }
+
+    .feature-card h3 {
+      font-size: 1.18rem;
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      color: rgba(255,255,255,0.68);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .step {
+      padding: 26px 22px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+    }
+
+    .step-number {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      background: rgba(30, 144, 255, 0.12);
+      border: 1px solid rgba(30, 144, 255, 0.18);
+      color: #9fd0ff;
+    }
+
+    .step h4 {
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+    }
+
+    .step p {
+      color: rgba(255,255,255,0.66);
+      line-height: 1.7;
+      font-size: 0.92rem;
+    }
+
+    /* ===== TIPS ===== */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .tip-card {
+      padding: 26px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .tip-card h3 {
+      margin-bottom: 12px;
+      font-size: 1.15rem;
+    }
+
+    .tip-card p {
+      color: rgba(255,255,255,0.68);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    /* ===== CTA ===== */
+    .cta-box {
+      padding: 50px 30px;
+      border-radius: 28px;
+      text-align: center;
+      background: linear-gradient(
+        135deg,
+        rgba(30, 144, 255, 0.12),
+        rgba(0, 94, 255, 0.08)
+      );
+      border: 1px solid rgba(30, 144, 255, 0.14);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    }
+
+    .cta-box h2 {
+      font-size: 2.4rem;
+      margin-bottom: 14px;
+    }
+
+    .cta-box p {
+      max-width: 700px;
+      margin: 0 auto 28px;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.8;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      padding: 30px 24px 50px;
+      text-align: center;
+      color: rgba(255,255,255,0.55);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      margin-top: 20px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1200px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-text {
+        text-align: center;
+      }
+
+      .hero-text p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-buttons,
+      .hero-mini-stats {
+        justify-content: center;
+      }
+
+      .why-grid,
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 992px) {
+      .nav-wrap {
+        gap: 18px;
+      }
+
+      .nav-links {
+        gap: 22px;
+      }
+
+      .nav-links li a {
+        font-size: 0.92rem;
+      }
+
+      .hero-text h1 {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: flex;
+      }
+
+      .nav-wrap {
+        position: static;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: 78px;
+        right: 20px;
+        width: 280px;
+        background: rgba(10, 10, 10, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 16px 18px;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.55);
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      .nav-links li {
+        width: 100%;
+      }
+
+      .nav-links li a {
+        width: 100%;
+        text-align: left;
+        padding: 12px 14px;
+        border-radius: 12px;
+        font-size: 1rem;
+      }
+
+      .nav-links li.active a {
+        background: rgba(255,255,255,0.08);
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+      }
+
+      .active-line,
+      .hover-line {
+        display: none !important;
+      }
+
+      .navbar {
+        padding: 16px 18px;
+      }
+
+      .logo {
+        font-size: 1.35rem;
+      }
+
+      .auth-buttons {
+        display: none;
+      }
+
+      .hero-text h1 {
+        font-size: 2.35rem;
+      }
+
+      .hero-text p {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+      }
+
+      .why-grid,
+      .features-grid,
+      .steps,
+      .tips-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .subject-row {
+        flex-direction: column;
+      }
+
+      .timer-value {
+        font-size: 2.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header>
+    <nav class="navbar">
+      <a href="#home" class="logo">FOCUS<span>FLOW</span></a>
+
+      <div class="nav-wrap">
+        <ul class="nav-links" id="navLinks">
+          <li class="active"><a href="#home">Home</a></li>
+          <li><a href="#why">Why</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#tips">Tips</a></li>
+
+          <div class="active-line" id="activeLine"></div>
+          <div class="hover-line" id="hoverLine"></div>
+        </ul>
+
+        <div class="auth-buttons">
+          <a href="{{ url_for('login') }}" class="btn-outline">Login</a>
+          <a href="{{ url_for('register') }}" class="btn-solid">Get Started</a>
+        </div>
+
+        <div class="menu-toggle" id="menuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="home">
+    <div class="hero-text">
+      <div class="tag">Student Productivity Reimagined</div>
+      <h1>Track Your <span>Focus</span>. Beat Distractions. Study Smarter.</h1>
+      <p>
+        FocusFlow helps students monitor study sessions, track distractions, set goals,
+        analyze productivity patterns, and build better study habits with smart insights.
+        Stop guessing where your time goes — start measuring it.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="{{ url_for('register') }}" class="hero-primary">Start Free</a>
+        <a href="{{ url_for('dashboard') }}" class="hero-secondary">View Dashboard</a>
+      </div>
+
+      <div class="hero-mini-stats">
+        <div class="mini-stat">
+          <h3>+45%</h3>
+          <p>Better Focus Habits</p>
+        </div>
+        <div class="mini-stat">
+          <h3>120m</h3>
+          <p>Daily Target Example</p>
+        </div>
+        <div class="mini-stat">
+          <h3>7 Days</h3>
+          <p>Consistency Streak</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="glass-panel">
+        <div class="panel-top">
+          <h3>Live Focus Session</h3>
+          <div class="status-badge">Active</div>
+        </div>
+
+        <div class="timer-box">
+          <div class="timer-label">Current Session Timer</div>
+          <div class="timer-value">01:24:16</div>
+        </div>
+
+        <div class="subject-row">
+          <div class="subject-card">
+            <p>Current Subject</p>
+            <h4>Python Basics</h4>
+          </div>
+          <div class="subject-card">
+            <p>Distractions</p>
+            <h4>2 Times</h4>
+          </div>
+        </div>
+
+        <div class="progress-box">
+          <div class="progress-top">
+            <span>Daily Goal Progress</span>
+            <span>78%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHY SECTION ===== -->
+  <section id="why">
+    <h2 class="section-title">Why Students Need <span>FocusFlow</span></h2>
+    <p class="section-subtitle">
+      Most students think they study for hours, but in reality, a lot of time is lost to distractions,
+      breaks, and poor planning. FocusFlow gives you actual data so you can improve your discipline.
+    </p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <h3>⏳ Stop Wasting Time</h3>
+        <p>
+          Track real study time instead of guessing. Understand exactly how many focused minutes
+          you actually spend on each subject every day.
+        </p>
+      </div>
+
+      <div class="why-card">
+        <h3>📉 Detect Distractions</h3>
+        <p>
+          Log interruptions and see when your concentration drops. Build awareness around the habits
+          that are silently killing your productivity.
+        </p>
+      </div>
+
+      <div class="why-card">
+        <h3>🎯 Build Better Discipline</h3>
+        <p>
+          Daily goals, streak tracking, and progress analytics make consistency visible — and what gets
+          measured gets improved.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES SECTION ===== -->
+  <section id="features">
+    <h2 class="section-title">Powerful <span>Features</span></h2>
+    <p class="section-subtitle">
+      This is not just a timer. It is a complete student focus tracking system designed to help
+      you study with intention, consistency, and measurable progress.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⏱️</div>
+        <h3>Focus Session Timer</h3>
+        <p>
+          Start and stop study sessions with a clean timer built for serious students who want
+          to measure actual focus time.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📚</div>
+        <h3>Subject-Wise Tracking</h3>
+        <p>
+          Record sessions by subject like Python, Maths, DBMS, or Networking and see where your
+          real effort is going.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🚫</div>
+        <h3>Distraction Counter</h3>
+        <p>
+          Log distractions during a session to understand how often your attention breaks and improve
+          your study environment.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Analytics Dashboard</h3>
+        <p>
+          Visualize daily focus time, total sessions, subject performance, and trends that help you
+          optimize your routine.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Daily Goals</h3>
+        <p>
+          Set study targets and compare your actual focused time against your goals so you stay honest
+          with yourself.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <h3>Consistency Streaks</h3>
+        <p>
+          Track daily consistency and keep your momentum alive. Discipline becomes easier when progress
+          is visible.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section id="how">
+    <h2 class="section-title">How It <span>Works</span></h2>
+    <p class="section-subtitle">
+      A simple 4-step workflow that turns random study hours into structured, measurable focus.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h4>Register / Login</h4>
+        <p>Create your account and access your personal productivity workspace.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <h4>Start Focus Session</h4>
+        <p>Select your subject and begin a distraction-aware study timer.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <h4>Track Progress</h4>
+        <p>Save your sessions, monitor interruptions, and compare against your goals.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-number">4</div>
+        <h4>Improve Daily</h4>
+        <p>Use analytics and streak data to study smarter every single day.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TIPS SECTION ===== -->
+  <section id="tips">
+    <h2 class="section-title">Quick <span>Focus Tips</span></h2>
+    <p class="section-subtitle">
+      Even the best tracker is useless if your study habits are garbage. These small changes matter.
+    </p>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <h3>📵 Remove Easy Distractions</h3>
+        <p>
+          Keep your phone away from your study table. “I’ll just check one notification” is how
+          45 minutes disappear without you noticing.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <h3>🧠 Study One Subject Per Session</h3>
+        <p>
+          Jumping between subjects feels productive but often destroys deep focus. One session,
+          one subject, one clear target.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <h3>⏰ Use Short Honest Sessions</h3>
+        <p>
+          If you can only focus for 30 minutes, track 30 minutes honestly. Fake 3-hour sessions
+          help nobody.
+        </p>
+      </div>
+
+      <div class="tip-card">
+        <h3>📈 Review Your Pattern Weekly</h3>
+        <p>
+          Don’t just collect data. Check which days you focus best, which subjects drain you,
+          and when distractions spike.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA SECTION ===== -->
+  <section>
+    <div class="cta-box">
+      <h2>Ready to Study Like It Actually Matters?</h2>
+      <p>
+        Build discipline with real data, not fake confidence. Track your sessions, understand your habits,
+        and become the kind of student who finishes what they start.
+      </p>
+
+      <div class="cta-actions">
+        <a href="{{ url_for('register') }}" class="hero-primary">Create Account</a>
+        <a href="{{ url_for('login') }}" class="hero-secondary">Login Now</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    © 2026 FocusFlow | Student Focus Tracker Project | Built with HTML, CSS, JS, Flask & SQLite
+  </footer>
+
+  <script>
+    const navLinks = document.getElementById("navLinks");
+    const menuToggle = document.getElementById("menuToggle");
+    const items = navLinks.querySelectorAll("li");
+    const activeLine = document.getElementById("activeLine");
+    const hoverLine = document.getElementById("hoverLine");
+
+    let activeItem = document.querySelector(".nav-links li.active");
+
+    // Mobile menu toggle
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+
+    function setLine(line, item, extraWidth = 0, offsetFix = 0) {
+      if (window.innerWidth <= 768) return;
+
+      const link = item.querySelector("a");
+      const width = link.offsetWidth + extraWidth;
+      const left = item.offsetLeft - (extraWidth / 2) + offsetFix;
+
+      line.style.width = `${width}px`;
+      line.style.left = `${left}px`;
+    }
+
+    function updateActiveLine() {
+      if (window.innerWidth > 768 && activeItem) {
+        setLine(activeLine, activeItem, -8, 4);
+      }
+    }
+
+    window.addEventListener("load", updateActiveLine);
+    window.addEventListener("resize", updateActiveLine);
+
+    items.forEach(item => {
+      item.addEventListener("mouseenter", () => {
+        if (window.innerWidth <= 768) return;
+        setLine(hoverLine, item, 18, 0);
+        hoverLine.style.opacity = "1";
+      });
+
+      item.addEventListener("mouseleave", () => {
+        if (window.innerWidth <= 768) return;
+        hoverLine.style.opacity = "0";
+      });
+
+      item.addEventListener("click", () => {
+        items.forEach(i => i.classList.remove("active"));
+        item.classList.add("active");
+        activeItem = item;
+
+        if (window.innerWidth > 768) {
+          updateActiveLine();
+        }
+
+        if (window.innerWidth <= 768) {
+          navLinks.classList.remove("show");
+        }
+      });
+    });
+
+    // Click outside close menu
+    document.addEventListener("click", (e) => {
+      if (
+        window.innerWidth <= 768 &&
+        !navLinks.contains(e.target) &&
+        !menuToggle.contains(e.target)
+      ) {
+        navLinks.classList.remove("show");
+      }
+    });
+  </script>
+
+</body>
+</html>

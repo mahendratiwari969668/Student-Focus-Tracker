@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify OTP - FocusFlow</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #050505;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(30, 144, 255, 0.15), transparent 70%);
+      border-radius: 50%;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: -120px;
+      right: -120px;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, rgba(0, 94, 255, 0.12), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 460px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      padding: 34px 28px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .flash {
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(30, 144, 255, 0.08);
+      border: 1px solid rgba(30, 144, 255, 0.15);
+      color: #bfe1ff;
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: white;
+      outline: none;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    input:focus {
+      border-color: rgba(30, 144, 255, 0.35);
+      box-shadow: 0 0 0 4px rgba(30, 144, 255, 0.08);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1e90ff, #005eff);
+      color: white;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 0 18px rgba(30, 144, 255, 0.25);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 24px rgba(30, 144, 255, 0.35);
+    }
+  </style>
+</head>
+<body>
+  <div class="form-box">
+    <h1>Verify OTP</h1>
+    <p class="sub">Enter the 6-digit OTP sent to your email. In demo mode, check terminal.</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="flash">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <input type="text" name="otp" placeholder="Enter OTP..." maxlength="6" required>
+      <button type="submit">Verify OTP</button>
+    </form>
+  </div>
+</body>
+</html>
