@@ -4,7 +4,51 @@ FocusFlow is a smart student productivity web app built using **Flask + HTML + C
 
 It helps students track their study sessions, manage reminders, analyze subject-wise study patterns, and get support from an AI assistant.
 
----
+
+----------------------------____________________________-------------------------------------------______________________
+## ⚠️ IMPORTANT THINGS
+
+### 1) AI Assistant Setup (Required)
+If you want to use the **FLOWBOT AI Assistant**, you must create your **own API key** and save it inside a `.env` file.
+
+Example:
+
+env
+SAMBANOVA_API_KEY=your_api_key_here
+SAMBANOVA_API_URL=https://api.sambanova.ai/v1/chat/completions
+SAMBANOVA_MODEL=Meta-Llama-3.1-8B-Instruct
+
+Without your own API key, the AI feature will not work.
+
+2) Forgot Password / Reset Password
+If you forget your password, click on Forgot Password and reset it using OTP verification.
+3) OTP by Default (Terminal Mode)
+By default, if email credentials are not configured, the OTP will be shown in the terminal / VS Code console.
+So if you are running the project locally and you do not set email credentials, check the terminal to see the OTP.
+4) OTP in Email (Optional)
+If you want the OTP to be sent directly to your email inbox, you must add your own Gmail address and Gmail App Password inside the .env file.
+Example:
+Env
+Copy code
+SENDER_EMAIL=your_gmail_address_here
+SENDER_PASSWORD=your_gmail_app_password_here
+5) How to get Gmail App Password
+To get a Gmail App Password:
+Turn on 2-Step Verification in your Google account
+Then go to App Passwords
+Generate a new app password for Mail
+Use that generated password in .env
+⚠️ Do NOT use your normal Gmail password
+You must use the App Password generated after enabling 2-Factor Authentication / 2-Step Verification.
+6) Security Warning
+Never upload your .env file to GitHub because it contains:
+API keys
+Gmail email
+Gmail app password
+Secret keys
+
+
+----------------------------------________-----------------------------____________--------------------------------------
 
 ## 🚀 Features
 
